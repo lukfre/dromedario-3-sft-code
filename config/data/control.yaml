@@ -1,0 +1,5 @@
+### dataset
+dataset_dir: /leonardo_scratch/fast/AIFAC_L04_006/tuluit/
+dataset: dromedario-control
+cutoff_len: 4096 # same as TULU3 paper
+

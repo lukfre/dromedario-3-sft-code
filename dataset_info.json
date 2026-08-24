@@ -1,0 +1,72 @@
+{
+    "dromedario-control": {
+        "file_name": "tulu3___TULU-IT___control___sharegpt.jsonl",
+        "formatting": "sharegpt",
+        "columns": {
+            "messages": "conversations"
+        },
+        "tags": {
+            "role_tag": "from",
+            "content_tag": "value",
+            "user_tag": "human",
+            "assistant_tag": "gpt",
+            "system_tag": "system"
+        }
+    },
+    "dromedario-sub_50": {
+        "file_name": "tulu3___TULU-IT___sub_50___sharegpt.jsonl",
+        "formatting": "sharegpt",
+        "columns": {
+            "messages": "conversations"
+        },
+        "tags": {
+            "role_tag": "from",
+            "content_tag": "value",
+            "user_tag": "human",
+            "assistant_tag": "gpt",
+            "system_tag": "system"
+        }
+    },
+    "dromedario-sub_100": {
+        "file_name": "tulu3___TULU-IT___sub_100___sharegpt.jsonl",
+        "formatting": "sharegpt",
+        "columns": {
+            "messages": "conversations"
+        },
+        "tags": {
+            "role_tag": "from",
+            "content_tag": "value",
+            "user_tag": "human",
+            "assistant_tag": "gpt",
+            "system_tag": "system"
+        }
+    },
+    "dromedario-add_50": {
+        "file_name": "tulu3___TULU-IT___add_50___sharegpt.jsonl",
+        "formatting": "sharegpt",
+        "columns": {
+            "messages": "conversations"
+        },
+        "tags": {
+            "role_tag": "from",
+            "content_tag": "value",
+            "user_tag": "human",
+            "assistant_tag": "gpt",
+            "system_tag": "system"
+        }
+    },
+    "dromedario-add_100": {
+        "file_name": "tulu3___TULU-IT___add_100___sharegpt.jsonl",
+        "formatting": "sharegpt",
+        "columns": {
+            "messages": "conversations"
+        },
+        "tags": {
+            "role_tag": "from",
+            "content_tag": "value",
+            "user_tag": "human",
+            "assistant_tag": "gpt",
+            "system_tag": "system"
+        }
+    }
+}
