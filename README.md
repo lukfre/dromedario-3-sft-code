@@ -1,6 +1,6 @@
 # Dromedario 3
 
-**Dromedario 3** is a large-scale Italian instruction-tuning dataset derived from the English Tülu 3 SFT mixture through a principled translation pipeline: instructions and responses are classified according to the [Super-NaturalInstructions](https://github.com/allenai/natural-instructions) taxonomy, classes are manually reviewed for translation safety, and items in validated classes are machine-translated into Italian. 
+**Dromedario 3** is an Italian instruction-tuning dataset based on the English Tülu 3 SFT mixture. Instructions and responses are classified using the [Super-NaturalInstructions](https://github.com/allenai/natural-instructions) taxonomy, and the resulting classes are manually reviewed to determine which examples can be safely translated. Examples from the selected classes are then machine-translated into Italian.
 
 Dromedario 3 is intended for supervised fine-tuning of Italian (and Italian/English bilingual) large language models, supporting the same broad range of tasks as Tülu 3: open-ended dialogue, reasoning, coding, and knowledge-intensive instruction following, with Italian instruction-response pairs alongside the original English data.
 
@@ -27,7 +27,7 @@ Every row carries both the original conversation and, where available, its Itali
 # SFT training on CINECA
 If you wish to train your model on Dromedario, you can follow these instructions.
 The original experiments were carried out on the [Leonardo HPC](https://docs.hpc.cineca.it/hpc/leonardo.html) (CINECA), so they should scale well on any SLURM-based cluster.
-We perfomed all training runs using 4 nodes in parallel, each equipped with 4 GPUs with 64GBs of VRAM. 
+We performed all training runs using 4 nodes in parallel, each equipped with 4 GPUs with 64 GB of VRAM. 
 We handled the parallelism with [DeepSpeed](https://www.deepspeed.ai/tutorials/zero/).
 
 This repo itself must be cloned directly into `$SCRATCH_ROOT/dromedario` (i.e. what the scripts call
@@ -50,7 +50,7 @@ cd LLaMA-Factory
 # Use uv to sync dependencies
 uv pip install -e .
 uv pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121 --reinstall # check your cuda version beforehand
-uv pip install "transformers==4.57.3" # Note: we need to pin transformers to deal with with Minerva
+uv pip install "transformers==4.57.3" # Note: we need to pin transformers to deal with Minerva
 uv pip install -r requirements/metrics.txt
 uv pip install wandb 
 
@@ -79,8 +79,8 @@ PY
 
 ## Logging inside the compute node
 
-You may want to login into a compute node for debugging.
-To do so, setup a public key on the login node.
+You may want to log into a compute node for debugging.
+To do so, set up a public key on the login node.
 
 ```bash
 # Create a local SSH keypair on the cluster
@@ -94,7 +94,7 @@ chmod 700 ~/.ssh
 chmod 600 ~/.ssh/authorized_keys
 ```
 
-Them, you can connect to the compute node (only when the job is running) with:
+Then, you can connect to the compute node (only when the job is running) with:
 
 ```bash
 ssh lrdnXXXX # use squeue -u $USER to see your assigned compute nodes
