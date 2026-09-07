@@ -2,7 +2,7 @@
 
 **Dromedario 3** is a large-scale Italian instruction-tuning dataset derived from the English Tülu 3 SFT mixture through a principled translation pipeline: instructions and responses are classified according to the [Super-NaturalInstructions](https://github.com/allenai/natural-instructions) taxonomy, classes are manually reviewed for translation safety, and items in validated classes are machine-translated into Italian. 
 
-**Dromedario 3** is intended for supervised fine-tuning of Italian (and Italian/English bilingual) large language models, supporting the same broad range of tasks as Tülu 3 -- open-ended dialogue, reasoning, coding, and knowledge-intensive instruction following -- with Italian instruction-response pairs alongside the original English data.
+Dromedario 3 is intended for supervised fine-tuning of Italian (and Italian/English bilingual) large language models, supporting the same broad range of tasks as Tülu 3: open-ended dialogue, reasoning, coding, and knowledge-intensive instruction following, with Italian instruction-response pairs alongside the original English data.
 
 ## TL;DR:
 
