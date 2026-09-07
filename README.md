@@ -34,12 +34,22 @@ This repo itself must be cloned directly into `$SCRATCH_ROOT/dromedario` (i.e. w
 `$PROJECT_DIR` — see [Configuration](#configuration)): the `.sbatch` scripts `cd` there and expect
 `./config/...` and `./_configs/...` to resolve relative to that directory.
 
+This repo relies on two separate Python environments. The repo's own utility scripts
+(`prepare_dataset.py`, `compose_yaml.py`, `download_models.py`) run under the `uv`-managed
+environment pinned by `uv.lock` (Python 3.12, per `.python-version`/`pyproject.toml`) — run
+`uv sync --locked` once, then invoke them with `uv run <script>.py` as shown below. Training instead
+uses a separate Python 3.11 virtualenv (`llama_env`, created below) containing LLaMA-Factory, since
+that is the Python version its dependencies target.
+
 ## Environment Setup
 
 ```bash
 cd $SCRATCH_ROOT/dromedario   # clone/run everything from here on
 
-# Create virtual env for llama factory
+# Sync the utility environment (prepare_dataset.py, compose_yaml.py, download_models.py)
+uv sync --locked
+
+# Create a separate virtual env for LLaMA Factory (training)
 uv venv llama_env --python 3.11
 source llama_env/bin/activate
 

@@ -59,12 +59,7 @@ export WANDB_MODE=offline
 # Check if the required models are present in the Hugging Face cache before starting training
 models=(
     "meta-llama/Llama-3.1-8B"
-    "meta-llama/Llama-3.2-1B"
-    "meta-llama/Llama-3.2-3B"
     "sapienzanlp/Minerva-7B-base-v1.0"
-    "sapienzanlp/Minerva-350M-base-v1.0"
-    "sapienzanlp/Minerva-1B-base-v1.0"
-    "sapienzanlp/Minerva-3B-base-v1.0"
 )
 for model in "${models[@]}"; do
     if [ -d "$HF_HOME/hub/models--${model//\//--}" ]; then
