@@ -26,7 +26,7 @@ Every row carries both the original conversation and, where available, its Itali
 
 # SFT training on CINECA
 If you wish to train your model on Dromedario, you can follow these instructions.
-The original experiments were carried out on the [Leonardo HPC](https://docs.hpc.cineca.it/hpc/leonardo.html) (CINECA), so they should scale well on any SLURM-based cluster.
+The original experiments were carried out on the [Leonardo HPC](https://docs.hpc.cineca.it/hpc/leonardo.html) (CINECA); the provided scripts can be adapted to other SLURM-based clusters.
 We performed all training runs using 4 nodes in parallel, each equipped with 4 GPUs with 64 GB of VRAM. 
 We handled the parallelism with [DeepSpeed](https://www.deepspeed.ai/tutorials/zero/).
 
