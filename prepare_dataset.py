@@ -212,9 +212,9 @@ def main(args: Args):
 
     # base: multilingual + untranslatable EN, using original messages
     t3_base = list(
-        t3_it_full.filter(lambda x: x["id"] in always_include_ids).remove_columns(
-            ["messages_transl"]
-        )
+        t3_it_full.filter(lambda x: x["id"] in always_include_ids)
+        .map(lambda x: {"messages": x["messages_orig"]})
+        .remove_columns(["messages_transl"])
     )
 
     # translatable pool: keep both EN and IT messages for composition

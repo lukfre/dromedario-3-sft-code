@@ -84,6 +84,8 @@ PY
 
 # If fused_adam is compatible, then all good. 
 # Otherwise, you need to install deepspeed on a node with CUDA toolkit loaded.
+
+cd "$SCRATCH_ROOT/dromedario"   # back to the repo root for the steps below
 ```
 
 
@@ -172,7 +174,7 @@ You can do so by running:
 
 ### Training run
 
-We ran all trainings through the [LlamaFactory library](https://llamafactory.readthedocs.io/en/latest/).
+We ran all trainings through the [LLaMA-Factory library](https://llamafactory.readthedocs.io/en/latest/).
 Refer to the official documentation available [here](https://llamafactory.readthedocs.io/en/latest/getting_started/sft.html) for the setup.
 
 Before submitting the jobs, generate the per-run LLaMA-Factory configs by combining the base config
