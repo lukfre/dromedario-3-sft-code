@@ -1,5 +1,3 @@
-<img src="assets/logo.png" alt="Dromedario 3 logo" width="220"/>
-
 # Dromedario 3
 
 **Dromedario_3** is a large-scale Italian instruction-tuning dataset derived from the English Tülu 3 SFT mixture through a principled translation pipeline: instructions and responses are classified according to the [Super-NaturalInstructions](https://github.com/allenai/natural-instructions) taxonomy, classes are manually reviewed for translation safety, and items in validated classes are machine-translated into Italian. 
