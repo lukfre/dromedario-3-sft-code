@@ -1,7 +1,7 @@
 [project]
-name = "code"
+name = "dromedario-3-sft-code"
 version = "0.1.0"
-description = "Add your description here"
+description = "Dataset preparation and SFT training utilities for Dromedario 3"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
