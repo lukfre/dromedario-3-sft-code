@@ -14,12 +14,13 @@ from tap import Tap
 
 dotenv.load_dotenv()
 user = os.environ.get("USER")
+scratch_root = os.environ.get("SCRATCH_ROOT", f"/leonardo_scratch/large/userexternal/{user}")
 
 
 class Args(Tap):
     model: str
     token: str | None = os.environ.get("HF_TOKEN", None)
-    hf_home: str = f"/leonardo_scratch/large/userexternal/{user}/.hf_cache"
+    hf_home: str = f"{scratch_root}/.hf_cache"
     ignore_patterns: list[str] = ["*.bin"]  # noqa: RUF012
     # download safetensors only, skip pytorch bin
 

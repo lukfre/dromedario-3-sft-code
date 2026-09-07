@@ -1,17 +1,19 @@
+<img src="assets/logo.png" alt="Dromedario 3 logo" width="220"/>
+
 # Dromedario 3
 
-**Dromedario-3** is a large-scale Italian instruction-tuning dataset derived from the English Tülu 3 SFT mixture through a principled translation pipeline: instructions and responses are classified according to the [Natural Instructions](https://github.com/allenai/natural-instructions) taxonomy, classes are manually reviewed for translation safety, and items in validated classes are machine-translated into Italian. 
+**Dromedario_3** is a large-scale Italian instruction-tuning dataset derived from the English Tülu 3 SFT mixture through a principled translation pipeline: instructions and responses are classified according to the [Super-NaturalInstructions](https://github.com/allenai/natural-instructions) taxonomy, classes are manually reviewed for translation safety, and items in validated classes are machine-translated into Italian. 
 
-**Dromedario-3** is intended for supervised fine-tuning of Italian (and Italian/English bilingual) large language models, supporting the same broad range of tasks as Tülu 3 — open-ended dialogue, reasoning, coding, and knowledge-intensive instruction following — with Italian instruction-response pairs alongside the original English data.
+**Dromedario_3** is intended for supervised fine-tuning of Italian (and Italian/English bilingual) large language models, supporting the same broad range of tasks as Tülu 3 — open-ended dialogue, reasoning, coding, and knowledge-intensive instruction following — with Italian instruction-response pairs alongside the original English data.
 
 ## TL;DR:
 
-Dromedario 3 is freely available on [HuggingFace](https://huggingface.co/datasets/sapienzanlp/dromedario3) and can be downloaded with the `datasets` library.
+Dromedario 3 is freely available on [HuggingFace](https://huggingface.co/datasets/sapienzanlp/Dromedario_3) and can be downloaded with the `datasets` library.
 
 ```python
 from datasets import load_dataset
 
-ds = load_dataset("sapienzanlp/Dromedario-3", split="train")
+ds = load_dataset("sapienzanlp/Dromedario_3", split="train")
 
 # Italian subset: rows with a usable translation
 it_only = ds.filter(lambda x: x["messages_transl"] is not None)
@@ -30,9 +32,15 @@ The original experiments were carried out on the [Leonardo HPC](https://docs.hpc
 We perfomed all training runs using 4 nodes in parallel, each equipped with 4 GPUs with 64GBs of VRAM. 
 We handled the parallelism with [DeepSpeed](https://www.deepspeed.ai/tutorials/zero/).
 
+This repo itself must be cloned directly into `$SCRATCH_ROOT/dromedario` (i.e. what the scripts call
+`$PROJECT_DIR` — see [Configuration](#configuration)): the `.sbatch` scripts `cd` there and expect
+`./config/...` and `./_configs/...` to resolve relative to that directory.
+
 ## Environment Setup
 
 ```bash
+cd $SCRATCH_ROOT/dromedario   # clone/run everything from here on
+
 # Create virtual env for llama factory
 uv venv llama_env --python 3.11
 source llama_env/bin/activate
@@ -95,24 +103,59 @@ ssh lrdnXXXX # use squeue -u $USER to see your assigned compute nodes
 ```
 
 
+## Configuration
+
+This repo is set up around our own CINECA Leonardo account; before running anything, edit the
+following:
+
+**Cluster paths** — every script derives its paths from a single `SCRATCH_ROOT` environment
+variable (default: `/leonardo_scratch/large/userexternal/$USER`, the Leonardo scratch convention).
+Export a different `SCRATCH_ROOT` before running any script if you are on another cluster/filesystem.
+This repo itself must be cloned directly into `$SCRATCH_ROOT/dromedario` (called `$PROJECT_DIR` in
+the scripts) — the `.sbatch` scripts `cd` there and resolve `./config/...` and `./_configs/...`
+relative to it.
+
+**SLURM account & partition** — `scripts/submit_all_configs.sh` requires `SLURM_ACCOUNT` to be set
+in your environment (it has no usable default) and optionally `SLURM_PARTITION` (defaults to
+`boost_usr_prod`, the Leonardo GPU partition); both are passed to `sbatch` and override whatever is
+in the `.sbatch` files. If you instead sbatch `scripts/multinode_sft.sbatch` or
+`scripts/singlenode_sft.sbatch` directly, note that SLURM does **not** expand shell variables inside
+`#SBATCH` directives, so you must edit the `-A` (account) and `-p` (partition) lines in those files
+by hand, or override them on the command line (`sbatch --account=... --partition=... ...`).
+
+**HuggingFace token** — set `hf_hub_token` in [`config/dromedario_sft.yaml`](config/dromedario_sft.yaml)
+(currently a placeholder, `hf_XXXX...`) if the models/dataset you use are gated.
+
+**Dataset location** — pick one directory for the prepared dataset, pass it as `--output_dir` to
+`prepare_dataset.py`, and set `dataset_dir` in every file under [`config/data/`](config/data) to that
+same directory (currently a `path/to/dataset` placeholder in both places). Then copy
+`config/dataset_info.json` into that directory as well — its keys already match the `dataset:`
+fields in `config/data/*.yaml`, and this is also what `compose_yaml.py`'s output reminds you to do.
+
+**Output location** — `output_dir` in [`config/dromedario_sft.yaml`](config/dromedario_sft.yaml)
+defaults to `./saves/`; change it if you want checkpoints written elsewhere.
+
 ## Training 
 
-### Models
+### Data
 
 This script will download and convert the dataset into the shareGPT format. 
 It will write on disk all recipes used in our paper
-- `control`: identical with TULU3
+- `control`: Tülu 3 minus the 24K persona-based (`tulu_hard_coded`) instances
 - `sub_50`/`sub_100`: substitute half/all translatable items with their Italian translation
 - `add_50/add_100`: add Italian translations of half/all translatable items 
 
 ```bash
-uv run prepare_dataset.py # this generates a dataset_info.json file
-mv dataset_info.json ./LLaMA-Factory/data/dataset_info.json
+uv run prepare_dataset.py --output_dir path/to/dataset   # writes the ShareGPT jsonl files there
+cp config/dataset_info.json path/to/dataset/dataset_info.json
 ```
 
-### Data
+`path/to/dataset` must be the same directory you set as `dataset_dir` in `config/data/*.yaml`
+(see [Configuration](#configuration)).
 
-Leonardo compute nodes do not have access to internet, so model should be downloaded before starting any run. 
+### Models
+
+Leonardo compute nodes do not have access to internet, so models should be downloaded before starting any run. 
 You can do so by running:
 
 ```bash
@@ -124,8 +167,20 @@ You can do so by running:
 We ran all trainings through the [LlamaFactory library](https://llamafactory.readthedocs.io/en/latest/).
 Refer to the official documentation available [here](https://llamafactory.readthedocs.io/en/latest/getting_started/sft.html) for the setup.
 
+Before submitting the jobs, generate the per-run LLaMA-Factory configs by combining the base config
+([`config/dromedario_sft.yaml`](config/dromedario_sft.yaml)) with each model config in
+[`config/models/`](config/models) and each data config in [`config/data/`](config/data):
+
+```bash
+uv run compose_yaml.py     # writes one merged config per (model, dataset) pair into ./_configs/
+```
+
+This prints, for each generated config, the exact `llamafactory-cli train` command and the per-GPU
+batch size, and reminds you to copy `config/dataset_info.json` into every `dataset_dir` referenced by
+the data configs (see [Configuration](#configuration) below).
+
 Remember to change the log directories in the `.sbatch` scripts accordingly.
 
 ```bash
-./scripts/submit_all_configs.sh     # sbatches all declared configs 
+./scripts/submit_all_configs.sh     # sbatches all configs found in ./_configs/
 ```

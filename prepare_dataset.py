@@ -6,7 +6,7 @@ from datasets import load_dataset
 from tap import Tap
 from tqdm import tqdm
 
-TULU3_IT_NAME = "sapienzanlp/dromedario-3"
+TULU3_IT_NAME = "sapienzanlp/Dromedario_3"
 
 EXCLUDED_SOURCES = {
     "ai2-adapt-dev/tulu_hard_coded_repeated_10",
@@ -64,7 +64,7 @@ DOMAINS_TO_EXCLUDE = {
 
 
 class Args(Tap):
-    output_dir: str = "path/to/output"
+    output_dir: str = "path/to/dataset"
     seed: int = 42
 
     def process_args(self):
@@ -181,26 +181,6 @@ def compose_datasets(
     }
 
 
-# --- registry ------------------------------------------------------------
-
-
-def make_registry_entry(name: str, filename: str) -> dict:
-    return {
-        name: {
-            "file_name": filename,
-            "formatting": "sharegpt",
-            "columns": {"messages": "conversations"},
-            "tags": {
-                "role_tag": "from",
-                "content_tag": "value",
-                "user_tag": "human",
-                "assistant_tag": "gpt",
-                "system_tag": "system",
-            },
-        }
-    }
-
-
 # --- main ----------------------------------------------------------------
 
 
@@ -256,22 +236,19 @@ def main(args: Args):
 
     compositions = compose_datasets(t3_base, t3_to_sample, args.seed)
 
-    registry = {}
     for name, examples in compositions.items():
         print(f"\nProcessing '{name}' ({len(examples):,} examples)...")
         filename = f"tulu3___{name}___sharegpt.jsonl"
         output_path = args.output_path / filename
         if output_path.exists():
             print(f"  Skipping  : {output_path} already exists")
-            registry.update(make_registry_entry(name, filename))
             continue
         convert_and_save(examples, output_path)
-        registry.update(make_registry_entry(name, filename))
 
     print("Conversion done.")
-    print("Move dataset_info.json to ./LLaMA-Factory/data/dataset_info.json")
-    with open("dataset_info.json", "w") as f:
-        ujson.dump(registry, f, indent=4, ensure_ascii=True)
+    print(f"Copy config/dataset_info.json into {args.output_path} (the same directory you will")
+    print("set as `dataset_dir` in config/data/*.yaml) -- LLaMA-Factory reads dataset entries from")
+    print("that file, and its keys already match the `dataset:` fields in config/data/*.yaml.")
 
 
 if __name__ == "__main__":

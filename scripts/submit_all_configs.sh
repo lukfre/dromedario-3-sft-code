@@ -1,8 +1,15 @@
 #!/bin/bash
 set -euo pipefail
 
+# SCRATCH_ROOT defaults to the CINECA Leonardo path; override it in your
+# environment to run this on a different cluster/filesystem -- see README > Configuration.
+export SCRATCH_ROOT="${SCRATCH_ROOT:-/leonardo_scratch/large/userexternal/$USER}"
+# SLURM_ACCOUNT has no sane default -- it must be set to your own project account.
+: "${SLURM_ACCOUNT:?Set SLURM_ACCOUNT to your SLURM project account before running this script (see README > Configuration)}"
+SLURM_PARTITION="${SLURM_PARTITION:-boost_usr_prod}"
+
 # Check if the required models are present in the Hugging Face cache before starting training
-export HF_HOME="/leonardo_scratch/large/userexternal/$USER/.hf_cache"
+export HF_HOME="$SCRATCH_ROOT/.hf_cache"
 models=(
     "meta-llama/Llama-3.1-8B"
     "sapienzanlp/Minerva-7B-base-v1.0"
@@ -15,7 +22,7 @@ for model in "${models[@]}"; do
     fi
 done
 
-PROJECT_DIR="/leonardo_scratch/large/userexternal/$USER/dromedario"
+PROJECT_DIR="$SCRATCH_ROOT/dromedario"
 LOG_DIR="$PROJECT_DIR/logs"
 SBATCH_SCRIPT="$PROJECT_DIR/scripts/multinode_sft.sbatch"
 
@@ -54,6 +61,8 @@ for config in "${configs[@]}"; do
     fi
 
     sbatch \
+        --account="$SLURM_ACCOUNT" \
+        --partition="$SLURM_PARTITION" \
         --output="$out_log" \
         --error="$err_log" \
         --export=ALL,CMD="$config" \

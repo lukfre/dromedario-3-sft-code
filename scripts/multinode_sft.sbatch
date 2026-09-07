@@ -1,8 +1,13 @@
 #!/bin/bash
+# NOTE: SLURM does not expand shell variables inside #SBATCH directives, so the
+# account/partition/log paths below must be edited directly (or overridden on
+# the command line, e.g. `sbatch --account=... --partition=...`).
+# submit_all_configs.sh already overrides -A/-p/--output/--error via SLURM_ACCOUNT
+# and SLURM_PARTITION when submitting through it -- see README > Configuration.
 #SBATCH -A IscrB_SemTrain
 #SBATCH --job-name=dromedario_sft
-#SBATCH --output=/leonardo_scratch/large/userexternal/$USER/dromedario/code/logs/sft_%j.out.log
-#SBATCH --error=/leonardo_scratch/large/userexternal/$USER/dromedario/code/logs/sft_%j.err.log
+#SBATCH --output=/leonardo_scratch/large/userexternal/%u/dromedario/logs/sft_%j.out.log
+#SBATCH --error=/leonardo_scratch/large/userexternal/%u/dromedario/logs/sft_%j.err.log
 #SBATCH --ntasks-per-node=1
 #SBATCH --nodes=4
 #SBATCH --cpus-per-task=32
@@ -25,22 +30,26 @@ module load gcc
 
 unset HF_HUB_OFFLINE
 export HF_HUB_OFFLINE=1
-export PROJECT_DIR="/leonardo_scratch/large/userexternal/$USER/dromedario"
+
+# SCRATCH_ROOT is the one thing to change to run this on a different cluster/filesystem.
+# Set it in your environment before sbatching, otherwise it defaults to the CINECA Leonardo path.
+export SCRATCH_ROOT="${SCRATCH_ROOT:-/leonardo_scratch/large/userexternal/$USER}"
+export PROJECT_DIR="$SCRATCH_ROOT/dromedario"
 export VENV_DIR="$PROJECT_DIR/llama_env"
 cd $PROJECT_DIR
- 
-export TMPDIR="/leonardo_scratch/large/userexternal/$USER/tmp"
+
+export TMPDIR="$SCRATCH_ROOT/tmp"
 mkdir -p $TMPDIR
- 
+
 export TRANSFORMERS_OFFLINE=1
 export HF_DATASETS_OFFLINE=1
-export HF_HOME="/leonardo_scratch/large/userexternal/$USER/.hf_cache"
+export HF_HOME="$SCRATCH_ROOT/.hf_cache"
 export TORCH_EXTENSIONS_DIR="$TMPDIR/torch_extensions"
 mkdir -p $TORCH_EXTENSIONS_DIR
 export TORCH_COMPILE_DISABLE=1
 export PIP_CACHE_DIR="$TMPDIR/pip_cache"
 export UV_CACHE_DIR="$TMPDIR/uv_cache"
-export TIKTOKEN_CACHE_DIR="/leonardo_scratch/large/userexternal/$USER/tiktoken"
+export TIKTOKEN_CACHE_DIR="$SCRATCH_ROOT/tiktoken"
 mkdir -p $PIP_CACHE_DIR $UV_CACHE_DIR $TIKTOKEN_CACHE_DIR
 # export HF_TOKEN="_"
 export PYTHONPATH=$PROJECT_DIR
@@ -124,4 +133,5 @@ srun --nodes=$NNODES \
      '
 
 # before sbatching this script, do
-# export CMD=/leonardo_scratch/large/userexternal/$USER/dromedario/code/_configs/llama3___control.yaml
+# export CMD="$SCRATCH_ROOT/dromedario/_configs/llama3___control.yaml"
+# (this repo is expected to be cloned directly into $SCRATCH_ROOT/dromedario -- see README > Configuration)
