@@ -1,5 +1,6 @@
-import yaml
 from pathlib import Path
+
+import yaml
 
 BASE_CONFIG = Path("config/dromedario_sft.yaml")
 MODEL_PATH = Path("config/models")

@@ -1,8 +1,8 @@
 #!/bin/bash
 #SBATCH -A IscrB_SemTrain
-#SBATCH --job-name=tulu-it_sft
-#SBATCH --output=/leonardo_scratch/large/userexternal/$USER/tulu-it/code/logs/sft_%j.out.log
-#SBATCH --error=/leonardo_scratch/large/userexternal/$USER/tulu-it/code/logs/sft_%j.err.log
+#SBATCH --job-name=dromedario_sft
+#SBATCH --output=/leonardo_scratch/large/userexternal/$USER/dromedario/code/logs/sft_%j.out.log
+#SBATCH --error=/leonardo_scratch/large/userexternal/$USER/dromedario/code/logs/sft_%j.err.log
 #SBATCH --ntasks-per-node=1
 #SBATCH --nodes=4
 #SBATCH --cpus-per-task=32
@@ -25,7 +25,7 @@ module load gcc
 
 unset HF_HUB_OFFLINE
 export HF_HUB_OFFLINE=1
-export PROJECT_DIR="/leonardo_scratch/large/userexternal/$USER/tulu-it"
+export PROJECT_DIR="/leonardo_scratch/large/userexternal/$USER/dromedario"
 export VENV_DIR="$PROJECT_DIR/llama_env"
 cd $PROJECT_DIR
  
@@ -124,4 +124,4 @@ srun --nodes=$NNODES \
      '
 
 # before sbatching this script, do
-# export CMD=/leonardo_scratch/large/userexternal/$USER/tulu-it/code/_configs/llama3___control.yaml
+# export CMD=/leonardo_scratch/large/userexternal/$USER/dromedario/code/_configs/llama3___control.yaml

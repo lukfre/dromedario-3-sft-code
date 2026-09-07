@@ -1,47 +1,32 @@
-#!/usr/bin/env python3
 """
 Download a HuggingFace model on CINECA Leonardo login node.
 
 Usage:
-    python download_model.py --model meta-llama/Llama-3.1-8B-Instruct --token hf_xxx --hf-home /leonardo_scratch/large/userexternal/{user}/.hf_cache
+    python download_model.py --model meta-llama/Llama-3.1-8B-Instruct --token hf_xxx --hf-home /path/to/cache
     python download_model.py --model mistralai/Mistral-7B-v0.1  # public models, no token needed
 """
 
-import argparse
 import os
 from pathlib import Path
+
 import dotenv
+from tap import Tap
 
 dotenv.load_dotenv()
 user = os.environ.get("USER")
 
 
+class Args(Tap):
+    model: str
+    token: str | None = os.environ.get("HF_TOKEN", None)
+    hf_home: str = f"/leonardo_scratch/large/userexternal/{user}/.hf_cache"
+    ignore_patterns: list[str] = ["*.bin"]  # noqa: RUF012
+    # download safetensors only, skip pytorch bin
+
+
 def main():
-    parser = argparse.ArgumentParser(
-        description="Download a HuggingFace model to $WORK cache"
-    )
-    parser.add_argument(
-        "--model",
-        required=True,
-        help="HuggingFace repo id, e.g. meta-llama/Llama-3.1-8B-Instruct",
-    )
-    parser.add_argument(
-        "--token",
-        default=os.environ.get("HF_TOKEN", None),
-        help="HuggingFace token (required for gated models)",
-    )
-    parser.add_argument(
-        "--hf-home",
-        default=f"/leonardo_scratch/large/userexternal/{user}/.hf_cache",
-        help=f"Cache directory (default: /leonardo_scratch/large/userexternal/{user}/.hf_cache)",
-    )
-    parser.add_argument(
-        "--ignore-patterns",
-        nargs="*",
-        default=["*.bin"],  # download safetensors only, skip pytorch bin
-        help="File patterns to exclude from download (default: *.bin)",
-    )
-    args = parser.parse_args()
+    args = Args()
+    args = args.parse_args()
 
     # Set HF_HOME before importing huggingface_hub
     os.environ["HF_HOME"] = args.hf_home
@@ -64,9 +49,9 @@ def main():
         ignore_patterns=args.ignore_patterns,
     )
 
-    print(f"\nDownload complete!")
+    print("\nDownload complete!")
     print(f"  Path: {path}")
-    print(f"\nTo use it in your code:")
+    print("\nTo use it in your code:")
     print(f'  os.environ["HF_HOME"] = "{args.hf_home}"')
     print(f'  resolve_model_path("{args.model}")')
 

@@ -1,11 +1,12 @@
-import ujson
-from tqdm import tqdm
-from tap import Tap
 from pathlib import Path
-from datasets import load_dataset
-import numpy as np
 
-TULU3_IT_NAME = "ItalianNarratives/tulu-3-sft-mixture-translated-IT"
+import numpy as np
+import ujson
+from datasets import load_dataset
+from tap import Tap
+from tqdm import tqdm
+
+TULU3_IT_NAME = "sapienzanlp/dromedario-3"
 
 EXCLUDED_SOURCES = {
     "ai2-adapt-dev/tulu_hard_coded_repeated_10",
@@ -17,7 +18,7 @@ ROLE_MAP = {
     "system": "system",
 }
 
-TASK_TO_KEEP = [
+TASKS_TO_KEEP = [
     "mathematics",
     "text to code",
     "code to text",
@@ -63,7 +64,7 @@ DOMAINS_TO_EXCLUDE = {
 
 
 class Args(Tap):
-    output_dir: str = "/leonardo/pub/userexternal/$USER/dromedatio/data/"
+    output_dir: str = "path/to/output"
     seed: int = 42
 
     def process_args(self):
@@ -131,7 +132,7 @@ def stratified_split(
         by_source.setdefault(ex["source"], []).append(ex)
 
     sampled, remainder = [], []
-    for source, group in by_source.items():
+    for group in by_source.values():
         rng = np.random.default_rng(seed)
         n = min(len(group), max(1, round(len(group) * fraction)))
         indices = rng.choice(len(group), size=n, replace=False)
@@ -157,7 +158,7 @@ def compose_datasets(
 ) -> dict[str, list[dict]]:
     """
     t3_base      : always-included samples (untranslatable EN + multilingual),
-                   already have a `messages` key (original_messages)
+                   already have a `messages` key (messages_orig)
     t3_to_sample : translatable samples with both `en_messages` and `it_messages`
 
     control/sub_ variants have size len(t3_base) + len(t3_to_sample).
@@ -166,15 +167,15 @@ def compose_datasets(
     t3_it_half, t3_it_remainder = stratified_split(t3_to_sample, 0.5, seed)
 
     return {
-        "TULU-IT___control": [with_en(ex) for ex in t3_to_sample] + t3_base,
-        "TULU-IT___sub_50": [with_it(ex) for ex in t3_it_half]
+        "dromedario__control": [with_en(ex) for ex in t3_to_sample] + t3_base,
+        "dromedario__sub_50": [with_it(ex) for ex in t3_it_half]
         + [with_en(ex) for ex in t3_it_remainder]
         + t3_base,
-        "TULU-IT___sub_100": [with_it(ex) for ex in t3_to_sample] + t3_base,
-        "TULU-IT___add_50": [with_en(ex) for ex in t3_to_sample]
+        "dromedario__sub_100": [with_it(ex) for ex in t3_to_sample] + t3_base,
+        "dromedario__add_50": [with_en(ex) for ex in t3_to_sample]
         + t3_base
         + [with_it(ex) for ex in t3_it_half],
-        "TULU-IT___add_100": [with_en(ex) for ex in t3_to_sample]
+        "dromedario__add_100": [with_en(ex) for ex in t3_to_sample]
         + t3_base
         + [with_it(ex) for ex in t3_to_sample],
     }
@@ -206,6 +207,8 @@ def make_registry_entry(name: str, filename: str) -> dict:
 def main(args: Args):
     print("Loading T3-it...")
     t3_it_full = load_dataset(TULU3_IT_NAME, split="train")
+    # schema
+    # id, source, task, domain, lang_orig, messages_orig, messages_transl, flags
 
     # derive partitions from the annotation layer, excluding unwanted sources
     multilingual_ids = set()
@@ -214,12 +217,12 @@ def main(args: Args):
     for ex in t3_it_full:
         if ex["source"] in EXCLUDED_SOURCES:
             continue
-        if ex["original_language"] != "en":
+        if ex["lang_orig"] != "en":
             multilingual_ids.add(ex["id"])
         elif (
-            ex["translated_messages_it"] is None
+            ex["messages_transl"] is None
             or ex["domain"].lower() in DOMAINS_TO_EXCLUDE
-            or ex["task"].lower() not in TASK_TO_KEEP
+            or ex["task"].lower() not in TASKS_TO_KEEP
         ):
             untranslatable_ids.add(ex["id"])
         else:
@@ -229,17 +232,17 @@ def main(args: Args):
 
     # base: multilingual + untranslatable EN, using original messages
     t3_base = list(
-        t3_it_full.filter(lambda x: x["id"] in always_include_ids)
-        .map(lambda x: {"messages": x["original_messages"]})
-        .remove_columns(["translated_messages_it"])
+        t3_it_full.filter(lambda x: x["id"] in always_include_ids).remove_columns(
+            ["messages_transl"]
+        )
     )
 
     # translatable pool: keep both EN and IT messages for composition
     t3_to_sample = list(
         t3_it_full.filter(lambda x: x["id"] in translatable_ids).map(
             lambda x: {
-                "en_messages": x["original_messages"],
-                "it_messages": x["translated_messages_it"],
+                "en_messages": x["messages_orig"],
+                "it_messages": x["messages_transl"],
             }
         )
     )

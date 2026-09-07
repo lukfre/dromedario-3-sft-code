@@ -5,12 +5,7 @@ set -euo pipefail
 export HF_HOME="/leonardo_scratch/large/userexternal/$USER/.hf_cache"
 models=(
     "meta-llama/Llama-3.1-8B"
-    "meta-llama/Llama-3.2-1B"
-    "meta-llama/Llama-3.2-3B"
     "sapienzanlp/Minerva-7B-base-v1.0"
-    "sapienzanlp/Minerva-350M-base-v1.0"
-    "sapienzanlp/Minerva-1B-base-v1.0"
-    "sapienzanlp/Minerva-3B-base-v1.0"
 )
 for model in "${models[@]}"; do
     if [ -d "$HF_HOME/hub/models--${model//\//--}" ]; then
@@ -20,42 +15,25 @@ for model in "${models[@]}"; do
     fi
 done
 
-PROJECT_DIR="/leonardo_scratch/large/userexternal/$USER/tulu-it"
-LOG_DIR="$PROJECT_DIR/code/logs"
-SBATCH_SCRIPT="$PROJECT_DIR/code/scripts/multinode_sft.sbatch"
+PROJECT_DIR="/leonardo_scratch/large/userexternal/$USER/dromedario"
+LOG_DIR="$PROJECT_DIR/logs"
+SBATCH_SCRIPT="$PROJECT_DIR/scripts/multinode_sft.sbatch"
 
 mkdir -p "$LOG_DIR"
 
 configs=(
     # ===== LLAMA RUNS ON 7B MODELS =====
-    # "$PROJECT_DIR/code/_configs/llama3___control.yaml"
-    # "$PROJECT_DIR/code/_configs/llama3___add_50.yaml"
-    # "$PROJECT_DIR/code/_configs/llama3___add_100.yaml"
-    # "$PROJECT_DIR/code/_configs/llama3___sub_50.yaml"
-    # "$PROJECT_DIR/code/_configs/llama3___sub_100.yaml"
+    "$PROJECT_DIR/_configs/llama3___control.yaml"
+    "$PROJECT_DIR/_configs/llama3___add_50.yaml"
+    "$PROJECT_DIR/_configs/llama3___add_100.yaml"
+    "$PROJECT_DIR/_configs/llama3___sub_50.yaml"
+    "$PROJECT_DIR/_configs/llama3___sub_100.yaml"
     # ===== MINERVA RUNS ON 7B MODELS =====
-    # # "$PROJECT_DIR/code/_configs/minerva___control.yaml"
-    # "$PROJECT_DIR/code/_configs/minerva___add_50.yaml"
-    # "$PROJECT_DIR/code/_configs/minerva___add_100.yaml"
-    # "$PROJECT_DIR/code/_configs/minerva___sub_50.yaml"
-    # "$PROJECT_DIR/code/_configs/minerva___sub_100.yaml"
-    # ===== ADDITIONAL RUNS ON SMALLER MINERVA MODELS =====
-    # "$PROJECT_DIR/code/_configs/minerva_0.4B___control.yaml"
-    # "$PROJECT_DIR/code/_configs/minerva_0.4B___sub_100.yaml"
-    # "$PROJECT_DIR/code/_configs/minerva_0.4B___add_100.yaml"
-    # "$PROJECT_DIR/code/_configs/minerva_1B___control.yaml"
-    # "$PROJECT_DIR/code/_configs/minerva_1B___sub_100.yaml"
-    "$PROJECT_DIR/code/_configs/minerva_1B___add_100.yaml"
-    "$PROJECT_DIR/code/_configs/minerva_3B___control.yaml"
-    "$PROJECT_DIR/code/_configs/minerva_3B___sub_100.yaml"
-    "$PROJECT_DIR/code/_configs/minerva_3B___add_100.yaml"
-    # # ===== ADDITIONAL RUNS ON SMALLER LLAMA MODELS =====
-    # "$PROJECT_DIR/code/_configs/llama3_3B___control.yaml"
-    # "$PROJECT_DIR/code/_configs/llama3_3B___sub_100.yaml"
-    # "$PROJECT_DIR/code/_configs/llama3_3B___add_100.yaml"
-    # # "$PROJECT_DIR/code/_configs/llama3_1B___control.yaml"
-    # # "$PROJECT_DIR/code/_configs/llama3_1B___sub_100.yaml"
-    # "$PROJECT_DIR/code/_configs/llama3_1B___add_100.yaml"
+    "$PROJECT_DIR/_configs/minerva___control.yaml"
+    "$PROJECT_DIR/_configs/minerva___add_50.yaml"
+    "$PROJECT_DIR/_configs/minerva___add_100.yaml"
+    "$PROJECT_DIR/_configs/minerva___sub_50.yaml"
+    "$PROJECT_DIR/_configs/minerva___sub_100.yaml"
 )
 
 for config in "${configs[@]}"; do

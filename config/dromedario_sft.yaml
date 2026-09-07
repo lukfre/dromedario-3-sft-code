@@ -5,10 +5,10 @@ hf_hub_token: hf_XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 stage: sft
 do_train: true
 finetuning_type: full
-deepspeed: /leonardo_scratch/large/userexternal/$USER/tulu-it/code/config/ds_z3_config.json
+deepspeed: ./config/ds_z3_config.json
 
 ### output
-output_dir: /leonardo_scratch/large/userexternal/$USER/tulu-it/saves/
+output_dir: ./saves/
 save_only_model: false
 save_strategy: steps
 save_steps: 2000
