@@ -1,11 +1,14 @@
 <div align="center"><img src="assets/dromedario.alpha.png" width="200"></div>
 
 
-<div style="display: flex; justify-content: center; align-items: center; gap: 8px;">
+<div align="center">
+
 <a href="https://clic2026.unipa.it/" style="line-height: 0;"><img src="http://img.shields.io/badge/CLiC--it-2026-forestgreen.svg" style="display: block; margin: 0;"/></a>
 <a href="https://clic2026.unipa.it/accepted-papers/" style="line-height: 0;"><img src="http://img.shields.io/badge/paper-ACL--anthology-B31B1B.svg" style="display: block; margin: 0;"/></a>
 <a href="https://huggingface.co/datasets/sapienzanlp/Dromedario_3" style="line-height: 0;" target="_blank"><img src="https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Dataset-FCD21D" style="display: block; margin: 0;"/></a>
-<a href="https://creativecommons.org/licenses/by-nc/4.0/" style="line-height: 0;" target="_blank"><img src="https://img.shields.io/badge/License-ODC%20BY%201.0-green.svg" style="display: block; margin: 0;"/></a></div>
+<a href="https://creativecommons.org/licenses/by-nc/4.0/" style="line-height: 0;" target="_blank"><img src="https://img.shields.io/badge/License-ODC%20BY%201.0-green.svg" style="display: block; margin: 0;"/></a>
+
+</div>
 
 
 # 🐪 Dromedario 3
