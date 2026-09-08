@@ -1,10 +1,20 @@
-# Dromedario 3
+<div align="center"><img src="assets/dromedario.alpha.png" width="200"></div>
+
+
+<div style="display: flex; justify-content: center; align-items: center; gap: 8px;">
+<a href="https://clic2026.unipa.it/" style="line-height: 0;"><img src="http://img.shields.io/badge/CLiC--it-2026-forestgreen.svg" style="display: block; margin: 0;"/></a>
+<a href="https://clic2026.unipa.it/accepted-papers/" style="line-height: 0;"><img src="http://img.shields.io/badge/paper-ACL--anthology-B31B1B.svg" style="display: block; margin: 0;"/></a>
+<a href="https://huggingface.co/datasets/sapienzanlp/Dromedario_3" style="line-height: 0;" target="_blank"><img src="https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Dataset-FCD21D" style="display: block; margin: 0;"/></a>
+<a href="https://creativecommons.org/licenses/by-nc/4.0/" style="line-height: 0;" target="_blank"><img src="https://img.shields.io/badge/License-ODC%20BY%201.0-green.svg" style="display: block; margin: 0;"/></a></div>
+
+
+# 🐪 Dromedario 3
 
 **Dromedario 3** is an Italian instruction-tuning dataset based on the English Tülu 3 SFT mixture. Instructions and responses are classified using the [Super-NaturalInstructions](https://github.com/allenai/natural-instructions) taxonomy, and the resulting classes are manually reviewed to determine which examples can be safely translated. Examples from the selected classes are then machine-translated into Italian.
 
 The dataset can be used for supervised fine-tuning of Italian and Italian-English bilingual language models. It includes dialogue, reasoning, coding, and knowledge-intensive tasks, with both the original English data and the corresponding Italian translations.
 
-## TL;DR:
+## 🎯 TL;DR:
 
 Dromedario 3 is freely available on [HuggingFace](https://huggingface.co/datasets/sapienzanlp/Dromedario_3) and can be downloaded with the `datasets` library.
 
@@ -24,7 +34,7 @@ Every row carries both the original conversation and, where available, its Itali
 
 ---
 
-# SFT training on CINECA
+# 🚀 SFT training on CINECA
 If you wish to train your model on Dromedario, you can follow these instructions.
 The original experiments were carried out on the [Leonardo HPC](https://docs.hpc.cineca.it/hpc/leonardo.html) (CINECA); the provided scripts can be adapted to other SLURM-based clusters.
 We performed all training runs using 4 nodes in parallel, each equipped with 4 GPUs with 64 GB of VRAM. 
@@ -41,7 +51,7 @@ environment pinned by `uv.lock` (Python 3.12, per `.python-version`/`pyproject.t
 uses a separate Python 3.11 virtualenv (`llama_env`, created below) containing LLaMA-Factory, since
 that is the Python version its dependencies target.
 
-## Environment Setup
+## 🛠️ Environment Setup
 
 ```bash
 cd $SCRATCH_ROOT/dromedario   # clone/run everything from here on
@@ -89,7 +99,7 @@ cd "$SCRATCH_ROOT/dromedario"   # back to the repo root for the steps below
 ```
 
 
-## Logging inside the compute node
+## 📊 Logging inside the compute node
 
 You may want to log into a compute node for debugging.
 To do so, set up a public key on the login node.
@@ -113,7 +123,7 @@ ssh lrdnXXXX # use squeue -u $USER to see your assigned compute nodes
 ```
 
 
-## Configuration
+## ⚙️ Configuration
 
 This repo is set up around our own CINECA Leonardo account; before running anything, edit the
 following:
@@ -145,7 +155,7 @@ fields in `config/data/*.yaml`, and this is also what `compose_yaml.py`'s output
 **Output location** — `output_dir` in [`config/dromedario_sft.yaml`](config/dromedario_sft.yaml)
 defaults to `./saves/`; change it if you want checkpoints written elsewhere.
 
-## Training 
+## ⚡ Training 
 
 ### Data
 
